@@ -38,7 +38,6 @@ module "lambda_sqs_trigger" {
 
   timeout         = 30
   memory_size     = 1024
-  # dlq_arn         = aws_sqs_queue.dlq.arn
   policy_doc_json = data.aws_iam_policy_document.sqs_trigger_event_source_mapping.json
 }
 

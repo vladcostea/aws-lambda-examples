@@ -8,6 +8,14 @@ To trigger an event with SQS:
 aws sqs send-message --queue-url QUEUE_URL --message-body "some message"
 ```
 
+## S3 as event source
+
+```
+aws s3 cp FILE s3://BUCKET_ID/KEY
+```
+
+## DynamoDB Streams as event source
+
 References:
 
 - https://data.solita.fi/lessons-learned-from-combining-sqs-and-lambda-in-a-data-project/
