@@ -7,4 +7,4 @@ build:
 deploy: build
 	@aws lambda update-function-code \
 	  --function-name $(function) \
-	  --zip-file fileb://dist/lambda/$(function).zip
+	  --zip-file fileb://dist/lambda/$(function)/$(function).zip
