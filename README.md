@@ -16,7 +16,19 @@ aws s3 cp FILE s3://BUCKET_ID/KEY
 
 ## DynamoDB Streams as event source
 
-References:
+```
+aws dynamodb put-item \
+    --table-name dynamo_streams_trigger \
+    --item '{"pk":{"S":"123"},"sk":{"S":"456"}}'
+```
+
+## TODO
+
+- AWS XRay
+- Add SNS as an event source
+- Example SNS to multiple SQS queues
+
+## References:
 
 - https://data.solita.fi/lessons-learned-from-combining-sqs-and-lambda-in-a-data-project/
 - https://aws.amazon.com/blogs/compute/operating-lambda-application-design-part-3
