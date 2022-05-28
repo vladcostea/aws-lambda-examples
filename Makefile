@@ -1,16 +1,19 @@
 SHELL := /bin/bash
 
+.PHONY: build
+
 build:
-	@GOOS=linux GOARCH=amd64 go build -o ./dist/lambda/$(function)/main ./$(function)
-	@cd dist/lambda/$(function) && zip -9qyr $(function).zip main
+	@GOOS=linux GOARCH=amd64 go build -o ./build/lambda/$(function)/main ./lambda/$(function)
+	@cd build/lambda/$(function) && zip -9qyr $(function).zip main
 
-upload_s3:
+upload_s3: build
 	@aws s3api put-object \
-  	--bucket aws-lambda-examples-83a53dab073f4f7c \
-  	--key lambda/$(function).zip \
-  	--body ./dist/lambda/$(function)/$(function).zip
+  	--bucket $(BUILD_ARTIFACTS_BUCKET) \
+  	--key lambda/$(prefix)$(function).zip \
+  	--body ./build/lambda/$(function)/$(function).zip
 
-deploy: build
+deploy: upload_s3
 	@aws lambda update-function-code \
 	  --function-name $(function) \
-	  --zip-file fileb://dist/lambda/$(function)/$(function).zip
+	  --s3-bucket $(BUILD_ARTIFACTS_BUCKET) \
+		--s3-key lambda/$(prefix)$(function).zip

@@ -1,4 +1,4 @@
 .env
-/dist
-**/terraform.tfstate*
-**/.terraform*
+/build
+**/*/terraform.tfstate*
+**/*/.terraform*

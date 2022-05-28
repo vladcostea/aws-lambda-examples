@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4"
+    }
+  }
+}
+
 resource "aws_lambda_function" "function" {
   function_name    = var.function_name
   role             = aws_iam_role.role.arn
@@ -5,7 +14,7 @@ resource "aws_lambda_function" "function" {
   runtime          = "go1.x"
   timeout          = var.timeout
   memory_size      = var.memory_size
-  s3_bucket        = "aws-lambda-examples-83a53dab073f4f7c"
+  s3_bucket        = var.build_artifacts
   s3_key           = "lambda/${var.function_name}.zip"
 
   dynamic "dead_letter_config" {
@@ -41,7 +50,7 @@ EOF
 }
 
 data "aws_iam_policy_document" "policy_doc" {
-  override_json = var.policy_doc_json
+  override_policy_documents = [var.policy_doc_json]
 
   statement {
     actions = [
