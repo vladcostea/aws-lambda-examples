@@ -4,7 +4,25 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4"
     }
+
+    archive = {
+      source = "hashicorp/archive"
+      version = "~> 2"
+    }
   }
+}
+
+data "archive_file" "lambda_zip" {
+  type = "zip"
+  source_dir = "./build"
+  output_path = "./build/main.zip"
+}
+
+resource "aws_s3_object" "lambda_package" {
+  bucket = var.build_artifacts
+  key = "lambda/${var.function_name}.zip"
+  source = data.archive_file.lambda_zip.output_path
+  etag = data.archive_file.lambda_zip.output_md5
 }
 
 resource "aws_lambda_function" "function" {
@@ -15,15 +33,7 @@ resource "aws_lambda_function" "function" {
   timeout          = var.timeout
   memory_size      = var.memory_size
   s3_bucket        = var.build_artifacts
-  s3_key           = "lambda/${var.function_name}.zip"
-
-  dynamic "dead_letter_config" {
-    for_each = var.dlq_arn != "" ? [1]: []
-    content {
-      target_arn = var.dlq_arn
-    }
-  }
-
+  s3_key           = aws_s3_object.lambda_package.key
   tracing_config {
     mode = "Active"
   }
@@ -72,19 +82,6 @@ data "aws_iam_policy_document" "policy_doc" {
       "arn:aws:logs:${var.aws_region}:${var.aws_account}:log-group:/aws/lambda/${var.function_name}:*"
     ]
   }
-
-  dynamic "statement" {
-    for_each = var.dlq_arn != "" ? [1]: [] 
-    content {
-      actions = [
-        "sqs:SendMessage"
-      ]
-
-      resources = [
-        var.dlq_arn
-      ]
-    }
-  }
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {
@@ -105,20 +102,4 @@ resource "aws_iam_role_policy_attachment" "policy_attach" {
 resource "aws_iam_role_policy_attachment" "aws_xray_write_only_access" {
   role       = aws_iam_role.role.name
   policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
-}
-
-output "role_name" {
-  value = aws_iam_role.role.name
-}
-
-output "arn" {
-  value = aws_lambda_function.function.arn
-}
-
-output "invoke_arn" {
-  value = aws_lambda_function.function.invoke_arn
-}
-
-output "function_name" {
-  value = aws_lambda_function.function.function_name
 }

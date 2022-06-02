@@ -10,11 +10,6 @@ variable "function_name" {
   type = string
 }
 
-variable "dlq_arn" {
-  type = string
-  default = ""
-}
-
 variable "timeout" {
   type    = number
   default = 5
