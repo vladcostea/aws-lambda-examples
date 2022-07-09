@@ -1,5 +1,5 @@
 module "lambda_helloworld" {
-  source = "../../../infra/modules/lambda_go_s3_v2"
+  source = "../../../infra/modules/lambda_helloworld"
 
   aws_account     = var.aws_account
   aws_region      = var.aws_region
