@@ -14,8 +14,8 @@ terraform {
 
 data "archive_file" "lambda_zip" {
   type = "zip"
-  source_dir = "./build"
-  output_path = "./build/main.zip"
+  source_file = "${var.build_path}/helloworld"
+  output_path = "${var.build_path}/helloworld.zip"
 }
 
 resource "aws_s3_object" "lambda_package" {
@@ -28,7 +28,7 @@ resource "aws_s3_object" "lambda_package" {
 resource "aws_lambda_function" "function" {
   function_name    = var.function_name
   role             = aws_iam_role.role.arn
-  handler          = "main"
+  handler          = "helloworld"
   runtime          = "go1.x"
   timeout          = var.timeout
   memory_size      = var.memory_size

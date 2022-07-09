@@ -5,6 +5,7 @@ module "lambda_helloworld" {
   aws_region      = var.aws_region
   build_artifacts = var.build_artifacts
   function_name   = "${var.prefix}helloworld"
+  build_path      = "../../../build"
 }
 
 variable "aws_account" {
@@ -21,5 +22,5 @@ variable "build_artifacts" {
 
 variable "prefix" {
   type = string
-  default = null
+  default = ""
 }

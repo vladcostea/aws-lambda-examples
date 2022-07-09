@@ -25,6 +25,12 @@ variable "policy_doc_json" {
   default = "{}"
 }
 
+variable "build_path" {
+  type = string
+  default = "./build"
+}
+
 variable "build_artifacts" {
   type = string
+  description = "S3 bucket containing build artifacts"
 }
